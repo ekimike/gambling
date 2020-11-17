@@ -18,13 +18,10 @@ public class GameMatchController {
     private HashMap<String, PlayerGame> playerRecord = new HashMap<>();
 
     @GetMapping("/{user}/new_game")
-    public String play(@PathVariable String user) {
+    public HashMap<String, PlayerGame> play(@PathVariable String user) {
 
-//        playerRecord.put(user, null);
         gameMatchService.playTest(playerRecord, user);
-//        int matchResult = gameMatchService.play(user);
-//        saveUserMatch(user, matchResult);
-        return gameMatchService.toString();
+        return playerRecord;
     }
 
     @DeleteMapping("/delete_game")
@@ -32,27 +29,21 @@ public class GameMatchController {
 
     }
 
-    private void saveUserMatch(String user, int countMatchesWon) {
-        if ( playerRecord.containsKey(user) ) {
-            int userRoundsPlayed = getRoundsPlayedAndAddOne(user, playerRecord);
-            playerRecord.get(user).
-                    setRoundsPlayed(userRoundsPlayed);
+    @PutMapping("/{user}/restart")
+    public String restartGameForUser(@PathVariable String user) {
 
+        if(playerRecord.containsKey(user)) {
+            PlayerGame playerGame = playerRecord.get(user);
+            playerGame.resetPlayerMatch();
+            System.out.println(playerGame);
+            return "Actualizado";
         } else {
-            PlayerGame playerGame = PlayerGame
-                    .builder()
-                    .userName(user)
-                    .roundsPlayed(1)
-                    .build();
-            playerRecord.put(user, playerGame);
+            return "usuario no existe";
         }
     }
 
-    private int getRoundsPlayedAndAddOne(final String user, final HashMap<String, PlayerGame> playerRecord) {
-        return playerRecord.get(user).getRoundsPlayed() + 1;
-    }
-
-    private int getRoundsWonAndAddOne(final String user, final HashMap<String, PlayerGame> playerRecord) {
-        return playerRecord.get(user).getWonMatches() + 1;
+    @GetMapping
+    public HashMap<String, PlayerGame> gameReport() {
+        return playerRecord;
     }
 }

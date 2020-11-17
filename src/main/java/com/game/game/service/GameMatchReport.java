@@ -6,5 +6,5 @@ import java.util.HashMap;
 
 public interface GameMatchReport {
 
-    void save(HashMap<String, PlayerGame> xyz, String user, int matchResult);
+    void save(HashMap<String, PlayerGame> xyz, String user, int matchResult, int drawResult);
 }

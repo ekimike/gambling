@@ -28,4 +28,10 @@ public class PlayerGame {
         return this;
     }
 
+    public PlayerGame resetPlayerMatch() {
+        roundsPlayed = 0;
+        wonMatches = 0;
+        return this;
+    }
+
 }

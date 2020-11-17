@@ -1,41 +1,59 @@
 package com.game.game.service;
 
 import com.game.game.entity.PlayerGame;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Random;
 
 @Service
 public class GameMatchServiceImpl implements GameMatchService {
 
-    GameChosenOption gameChosenOption;
+    @Autowired private GameMatchReport gameMatchReport;
 
     private final int INT_ONE = 1, INT_ZERO = 0;
 
     @Override
     public int play(String user) {
 
-        gameChosenOption = PlayerWithRandomOption.getNewHand();
+        GameChosenOption gameChosenOption = PlayerWithRandomOption.getNewHand();
 
         switch (gameChosenOption) {
             case ROCK:
-                System.out.println("DRAW");
                 return INT_ZERO;
             case PAPER:
-                System.out.println("PLAYER ONE WINS");
                 return INT_ONE;
             case SCISSORS:
-                System.out.println("PLAYER TWO WINS");
                 return INT_ZERO;
             default:
-                System.out.println("SOMETHING WENT WRONG");
                 return INT_ZERO;
 
         }
     }
+
+    @Override
+    public void playTest(HashMap<String, PlayerGame> playerRecord, String user) {
+        GameChosenOption gameChosenOption = PlayerWithRandomOption.getNewHand();
+
+        switch (gameChosenOption) {
+            case ROCK:
+                gameMatchReport.save(playerRecord, user, INT_ZERO);
+                break;
+            case PAPER:
+                gameMatchReport.save(playerRecord, user, INT_ONE);
+                break;
+            case SCISSORS:
+                gameMatchReport.save(playerRecord, user, INT_ZERO);
+                break;
+        }
+
+    }
+
+
 }
 
-class PlayerWithRandomOption extends PlayerGame {
+final class PlayerWithRandomOption extends PlayerGame {
 
     static GameChosenOption getNewHand() {
         return GameChosenOption.getRandomValue();

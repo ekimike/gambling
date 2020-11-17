@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Builder
+@ToString
 public class PlayerGame {
 
     private String userName;
@@ -16,5 +17,15 @@ public class PlayerGame {
 
     @Setter
     private int wonMatches;
+
+    public PlayerGame updateRounds() {
+        roundsPlayed += 1;
+        return this;
+    }
+
+    public PlayerGame updateWonMatches(int matchResult) {
+        wonMatches += matchResult;
+        return this;
+    }
 
 }

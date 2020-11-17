@@ -20,10 +20,11 @@ public class GameMatchController {
     @GetMapping("/{user}/new_game")
     public String play(@PathVariable String user) {
 
-        int userOneGameResult = gameMatchService.play(user);
-        saveUserMatch(user, userOneGameResult);
-        counter++;
-        return "hola: " + counter;
+//        playerRecord.put(user, null);
+        gameMatchService.playTest(playerRecord, user);
+//        int matchResult = gameMatchService.play(user);
+//        saveUserMatch(user, matchResult);
+        return gameMatchService.toString();
     }
 
     @DeleteMapping("/delete_game")
@@ -33,8 +34,10 @@ public class GameMatchController {
 
     private void saveUserMatch(String user, int countMatchesWon) {
         if ( playerRecord.containsKey(user) ) {
-            int userMatches = playerRecord.get(user).getRoundsPlayed() + 1;
-            playerRecord.get(user).setRoundsPlayed(userMatches);
+            int userRoundsPlayed = getRoundsPlayedAndAddOne(user, playerRecord);
+            playerRecord.get(user).
+                    setRoundsPlayed(userRoundsPlayed);
+
         } else {
             PlayerGame playerGame = PlayerGame
                     .builder()
@@ -43,5 +46,13 @@ public class GameMatchController {
                     .build();
             playerRecord.put(user, playerGame);
         }
+    }
+
+    private int getRoundsPlayedAndAddOne(final String user, final HashMap<String, PlayerGame> playerRecord) {
+        return playerRecord.get(user).getRoundsPlayed() + 1;
+    }
+
+    private int getRoundsWonAndAddOne(final String user, final HashMap<String, PlayerGame> playerRecord) {
+        return playerRecord.get(user).getWonMatches() + 1;
     }
 }

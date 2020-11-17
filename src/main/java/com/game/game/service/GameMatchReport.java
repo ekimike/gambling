@@ -1,10 +1,8 @@
 package com.game.game.service;
 
-import com.game.game.entity.PlayerGame;
-
-import java.util.HashMap;
+import com.game.game.entity.GameMatches;
 
 public interface GameMatchReport {
 
-    void save(HashMap<String, PlayerGame> xyz, String user, int matchResult, int drawResult);
+    void save(GameMatches gameMatches);
 }

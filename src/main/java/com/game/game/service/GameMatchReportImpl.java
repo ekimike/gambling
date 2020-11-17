@@ -8,22 +8,26 @@ import java.util.HashMap;
 @Service
 public class GameMatchReportImpl implements GameMatchReport{
 
+    private final int INT_ONE = 1;
+
     @Override
-    public void save(HashMap<String, PlayerGame> xyz, String user, int matchResult) {
+    public void save(HashMap<String, PlayerGame> xyz, String user, int matchResult, int drawResult) {
 
         PlayerGame existingPlayer = xyz.get(user);
 
         if( null == existingPlayer ) {
-            existingPlayer = PlayerGame
-                    .builder()
-                    .userName(user)
-                    .roundsPlayed(1)
-                    .wonMatches(matchResult)
-                    .build();
 
+            existingPlayer = new PlayerGame.Builder(user)
+                    .roundsPlayed(INT_ONE)
+                    .wonMatches(matchResult)
+                    .draws(drawResult)
+                    .build();
             xyz.put(user, existingPlayer);
         } else {
-            existingPlayer.updateRounds().updateWonMatches(matchResult);
+            existingPlayer
+                    .updateRounds()
+                    .updateWonMatches(matchResult)
+                    .updateDrawMatches(drawResult);
         }
 
 

@@ -23,7 +23,7 @@ public class GameMatchController {
 
     private GameMatches gameMatches = new GameMatches();
 
-    @GetMapping("/player/{user}/new_game")
+    @PostMapping("/player/{user}/new_game")
     public EntityModel<PlayerGame> play(@PathVariable String user) {
 
         gameMatches.setUser(user);
@@ -36,21 +36,21 @@ public class GameMatchController {
         return gamePlayer;
     }
 
-    @PutMapping("/player/{user}/restart")
+    @PatchMapping("/player/{user}/restart")
     public EntityModel<GameResult> restartGameForUser(@PathVariable String user) {
 
         GameResult gameResult;
+        PlayerGame playerGame;
 
         if( null == gameMatches || null == gameMatches.getRecordByPlayer() ) {
             gameResult = GameResult.builder().message("there is no games yet").build();
         } else if( !gameMatches.getRecordByPlayer().containsKey(user) ) {
             gameResult = GameResult.builder().message("such a user doesn't has played yet").build();
         } else {
+            playerGame =  gameMatches.getRecordByPlayer().get(user);
+            playerGame.resetPlayerMatch();
             gameResult = GameResult.builder().message("updated").build();
         }
-
-        PlayerGame playerGame =  gameMatches.getRecordByPlayer().get(user);
-        playerGame.resetPlayerMatch();
 
         EntityModel<GameResult> gameResultEntityModel = EntityModel.of(gameResult);
         WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).players());

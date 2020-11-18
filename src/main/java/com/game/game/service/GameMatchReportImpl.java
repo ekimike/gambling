@@ -1,11 +1,11 @@
 package com.game.game.service;
 
-import com.game.game.entity.GameMatches;
-import com.game.game.entity.PlayerGame;
-import com.game.game.entity.Result;
+import com.game.game.entity.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class GameMatchReportImpl implements GameMatchReport{
@@ -32,6 +32,7 @@ public class GameMatchReportImpl implements GameMatchReport{
                     .roundsPlayed(INT_ONE)
                     .wonMatches(actualUserMatchResult)
                     .draws(actualUserMatchResultDraw)
+                    .gameDetail(setGameDetails(gameMatches))
                     .build();
 
             gameMatches.getRecordByPlayer().put(user, existingPlayer);
@@ -40,7 +41,12 @@ public class GameMatchReportImpl implements GameMatchReport{
             existingPlayer
                     .updateRounds()
                     .updateWonMatches(actualUserMatchResult)
-                    .updateDrawMatches(actualUserMatchResultDraw);
+                    .updateDrawMatches(actualUserMatchResultDraw)
+                    .updateGameDetails(setGameDetails(gameMatches));
         }
+    }
+
+    private GameDetail setGameDetails(GameMatches gameMatches) {
+        return GameDetailFacade.getGameDetail(gameMatches);
     }
 }

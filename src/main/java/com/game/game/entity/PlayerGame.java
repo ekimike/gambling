@@ -4,6 +4,9 @@ package com.game.game.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @ToString
@@ -18,9 +21,12 @@ public class PlayerGame {
     @JsonProperty("draw")
     private  int draws;
 
+    private List<GameDetail> gameDetail;
+
     public static class Builder {
         private final String userName;
         private int roundsPlayed, wonMatches, draws;
+        private List<GameDetail> gameDetail = new ArrayList<>();
 
         public Builder(String userName) {
             this.userName = userName;
@@ -41,6 +47,11 @@ public class PlayerGame {
             return this;
         }
 
+        public Builder gameDetail(GameDetail val) {
+            gameDetail.add(val);
+            return this;
+        }
+
         public PlayerGame build() {
             return new PlayerGame(this);
         }
@@ -51,6 +62,7 @@ public class PlayerGame {
         roundsPlayed = builder.roundsPlayed;
         wonMatches = builder.wonMatches;
         draws = builder.draws;
+        gameDetail = builder.gameDetail;
     }
 
     public PlayerGame updateRounds() {
@@ -68,10 +80,16 @@ public class PlayerGame {
         return this;
     }
 
+    public PlayerGame updateGameDetails(GameDetail gameMatch) {
+        gameDetail.add(gameMatch);
+        return this;
+    }
+
     public PlayerGame resetPlayerMatch() {
         roundsPlayed = 0;
         wonMatches = 0;
         draws = 0;
+        gameDetail.clear();
         return this;
     }
 

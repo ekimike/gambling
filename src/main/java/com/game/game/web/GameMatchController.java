@@ -1,43 +1,84 @@
 package com.game.game.web;
 
 import com.game.game.entity.GameMatches;
+import com.game.game.entity.GameMatchesDTO;
+import com.game.game.entity.GameResult;
 import com.game.game.entity.PlayerGame;
 import com.game.game.service.GameMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
-@RequestMapping("/match/player")
+@RequestMapping("/match")
 public class GameMatchController {
 
     @Autowired private GameMatchService gameMatchService;
 
     private GameMatches gameMatches = new GameMatches();
 
-    @GetMapping("/{user}/new_game")
-    public PlayerGame play(@PathVariable String user) {
+    @GetMapping("/player/{user}/new_game")
+    public EntityModel<PlayerGame> play(@PathVariable String user) {
+
         gameMatches.setUser(user);
         gameMatchService.play(gameMatches);
-        return gameMatches.getRecordByPlayer().get(user);
+
+        EntityModel<PlayerGame> gamePlayer = EntityModel.of(gameMatches.getRecordByPlayer().get(user));
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).restartGameForUser(user));
+        gamePlayer.add(linkTo.withRel("reset-player-stats"));
+
+        return gamePlayer;
     }
 
-    @PutMapping("/{user}/restart")
-    public String restartGameForUser(@PathVariable String user) {
+    @PutMapping("/player/{user}/restart")
+    public EntityModel<GameResult> restartGameForUser(@PathVariable String user) {
+
+        GameResult gameResult;
 
         if( null == gameMatches || null == gameMatches.getRecordByPlayer() ) {
-            return "there is no games yet";
+            gameResult = GameResult.builder().message("there is no games yet").build();
         } else if( !gameMatches.getRecordByPlayer().containsKey(user) ) {
-            return "such a user doesn't has played yet";
+            gameResult = GameResult.builder().message("such a user doesn't has played yet").build();
+        } else {
+            gameResult = GameResult.builder().message("updated").build();
         }
 
         PlayerGame playerGame =  gameMatches.getRecordByPlayer().get(user);
         playerGame.resetPlayerMatch();
-        System.out.println(playerGame);
-        return "updated";
+
+        EntityModel<GameResult> gameResultEntityModel = EntityModel.of(gameResult);
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).players());
+        gameResultEntityModel.add(linkTo.withRel("all-gamers"));
+        return gameResultEntityModel;
     }
 
-    @GetMapping
-    public GameMatches gameReport() {
-        return gameMatches;
+    @GetMapping("/players")
+    public HashMap<String, PlayerGame> players() {
+        HashMap<String, PlayerGame> recordByPlayer = gameMatches.getRecordByPlayer();
+        return recordByPlayer;
+    }
+
+    @GetMapping("/resume")
+    public EntityModel<GameMatchesDTO> gameResume() {
+
+        GameMatchesDTO gameMatchesDTO = GameMatchesDTO
+                .builder()
+                .numberRoundsPlayed(gameMatches.getNumberRoundsPlayed())
+                .totalDraws(gameMatches.getTotalDraws())
+                .winsFirstPlayer(gameMatches.getWinsFirstPlayer())
+                .winsSecondPlayer(gameMatches.getWinsSecondPlayer())
+                .build();
+
+        EntityModel<GameMatchesDTO> gameResume = EntityModel.of(gameMatchesDTO);
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).players());
+        gameResume.add(linkTo.withRel("all-players"));
+
+        return gameResume;
     }
 }

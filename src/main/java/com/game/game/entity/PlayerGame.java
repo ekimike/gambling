@@ -1,6 +1,7 @@
 package com.game.game.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @NoArgsConstructor
@@ -8,9 +9,13 @@ import lombok.*;
 @ToString
 public class PlayerGame {
 
+    @JsonProperty("user")
     private  String userName;
+    @JsonProperty("rounds played")
     private  int roundsPlayed;
+    @JsonProperty("won")
     private  int wonMatches;
+    @JsonProperty("draw")
     private  int draws;
 
     public static class Builder {

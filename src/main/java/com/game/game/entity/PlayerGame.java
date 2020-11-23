@@ -12,9 +12,9 @@ import java.util.List;
 @ToString
 public class PlayerGame {
 
-    @JsonProperty("user")
+    @JsonProperty("userName")
     private  String userName;
-    @JsonProperty("rounds played")
+    @JsonProperty("roundsPlayed")
     private  int roundsPlayed;
     @JsonProperty("won")
     private  int wonMatches;

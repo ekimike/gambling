@@ -5,6 +5,8 @@ import com.game.game.entity.GameMatchesDTO;
 import com.game.game.entity.GameResult;
 import com.game.game.entity.PlayerGame;
 import com.game.game.service.GameMatchService;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -15,6 +17,8 @@ import java.util.HashMap;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Log4j2
+
 @RestController
 @RequestMapping("/match")
 public class GameMatchController {
@@ -23,8 +27,11 @@ public class GameMatchController {
 
     private GameMatches gameMatches = new GameMatches();
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/player/{user}/new_game")
     public EntityModel<PlayerGame> play(@PathVariable String user) {
+
+        log.info("new_game");
 
         gameMatches.setUser(user);
         gameMatchService.play(gameMatches);
@@ -36,8 +43,11 @@ public class GameMatchController {
         return gamePlayer;
     }
 
+    @CrossOrigin
     @PatchMapping("/player/{user}/restart")
     public EntityModel<GameResult> restartGameForUser(@PathVariable String user) {
+
+        log.info("restart user stats: ", user);
 
         GameResult gameResult;
         PlayerGame playerGame;
@@ -58,14 +68,19 @@ public class GameMatchController {
         return gameResultEntityModel;
     }
 
+    @CrossOrigin
     @GetMapping("/players")
     public HashMap<String, PlayerGame> players() {
+        log.info("list all players");
+
         HashMap<String, PlayerGame> recordByPlayer = gameMatches.getRecordByPlayer();
         return recordByPlayer;
     }
 
+    @CrossOrigin
     @GetMapping("/resume")
     public EntityModel<GameMatchesDTO> gameResume() {
+        log.info("resume game");
 
         GameMatchesDTO gameMatchesDTO = GameMatchesDTO
                 .builder()
@@ -80,5 +95,11 @@ public class GameMatchController {
         gameResume.add(linkTo.withRel("all-players"));
 
         return gameResume;
+    }
+
+    @CrossOrigin
+    @GetMapping("/hello")
+    public String getHello() {
+        return "hello from springboot";
     }
 }
